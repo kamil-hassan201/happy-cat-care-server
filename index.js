@@ -30,6 +30,11 @@ async function run() {
             const result = await cursor.toArray();
             res.json(result);
         })
+        app.get('/services/6', async (req, res) => {
+            const cursor = servicesCollection.find({}).limit(6);
+            const result = await cursor.toArray();
+            res.json(result);
+        })
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectID(id) };
@@ -72,14 +77,14 @@ async function run() {
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
-            console.log(user);
+
             const updateDoc = {
                 $set: {
                     role: 'admin'
                 }
             }
             const result = await usersCollection.updateOne(filter, updateDoc);
-            console.log(result);
+
             res.json(result);
         })
         app.post('/users', async (req, res) => {
@@ -107,7 +112,7 @@ async function run() {
         app.put('/appointment/:id', async (req, res) => {
             const id = req.params.id;
             const status = req.body;
-            console.log(status);
+
             const filter = { _id: ObjectID(id) };
             const options = { upsert: true };
             const updateDoc = {
@@ -118,6 +123,17 @@ async function run() {
             const result = await appointmentCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         })
+        // service update
+        app.put('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateService = req.body;
+            const filter = { _id: ObjectID(id) };
+
+            const updateDoc = { $set: updateService };
+            const result = await servicesCollection.updateOne(filter, updateDoc);
+            console.log(result);
+            res.json(result);
+        })
 
         //apointment delete
         app.delete('/appointment/:id', async (req, res) => {
@@ -125,9 +141,17 @@ async function run() {
 
             const query = { _id: ObjectID(id) };
             const result = await appointmentCollection.deleteOne(query);
-            console.log(result);
             res.json(result);
         })
+
+        // service delete
+        app.delete('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectID(id) };
+            const result = await servicesCollection.deleteOne(query);
+            res.json(result);
+        })
+
     }
     finally {
 
